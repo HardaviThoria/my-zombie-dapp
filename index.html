@@ -273,7 +273,7 @@ var cryptoZombies;
 var userAccount;
 
 function startApp() {
-  var cryptoZombiesAddress = "0x0D963a0c6F83b437784c2Ea1E6cC427B5721be06";
+  var cryptoZombiesAddress = "0xe982E462b094850F12AF94d21D470e21bE9D0E9C";
   cryptoZombies = new web3.eth.Contract(cryptoZombiesABI, cryptoZombiesAddress);
 
   cryptoZombies.events.Transfer({ filter: { _to: userAccount } })
