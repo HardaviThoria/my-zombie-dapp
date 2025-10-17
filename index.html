@@ -188,45 +188,15 @@
       margin-bottom: 15px;
       text-align: center;
     }
-
-   
-    button#playMusicButton {
-      position: fixed;
-      bottom: 10px;
-      right: 10px;
-      background: #8b0000;
-      color: white;
-      border: none;
-      padding: 10px;
-      font-size: 1.2em; 
-      cursor: pointer;
-      border-radius: 5px;
-      transition: 0.3s ease-in-out;
-      font-family: 'Press Gothic', sans-serif;
-    }
-
-    button#playMusicButton i {
-      font-size: 24px; 
-    }
-
-    button#playMusicButton:hover {
-      background: #000000;
-      transform: scale(1.1);
-    }
   </style>
 </head>
 
 <body>
   
-  <audio id="background-audio" loop>
+  <audio id="background-audio" loop autoplay>
     <source src="audio/AUDIO.mp3" type="audio/mp3">
     Your browser does not support the audio element.
   </audio>
-  
-  
-  <button id="playMusicButton" onclick="toggleMusic()">
-    <i class="fas fa-play"></i> 
-  </button>
   
   <div id="txStatus">My Zombie DApp</div>
   
@@ -250,24 +220,18 @@
   <div id="zombies"></div>
 
   <script>
-  var isPlaying = false; 
-
-function toggleMusic() {
+// Auto-play audio when user interacts with the page
+window.addEventListener('load', function() {
   var audio = document.getElementById('background-audio');
-  var icon = document.querySelector('#playMusicButton i');
-
-  if (isPlaying) {
-    audio.pause();
-    icon.classList.remove('fa-pause');
-    icon.classList.add('fa-play');
-  } else {
-    audio.play();
-    icon.classList.remove('fa-play');
-    icon.classList.add('fa-pause');
-  }
-
-  isPlaying = !isPlaying;
-}
+  // Try to play, if blocked by browser policy, will play on first user interaction
+  audio.play().catch(function(error) {
+    console.log('Autoplay blocked, will play on user interaction');
+    // Play on first user click anywhere on the page
+    document.body.addEventListener('click', function() {
+      audio.play();
+    }, { once: true });
+  });
+});
 
 var cryptoZombies;
 var userAccount;
