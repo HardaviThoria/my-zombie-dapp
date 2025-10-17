@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>My Zombie DApp</title>
+  <link rel="icon" href="SCR-20251016-ktfs.png" type="image/png">
+  
+  
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/web3/1.2.7-rc.0/web3.min.js"></script>
+  <script src="cryptozombies_abi.js"></script>
+
+  
+  <style>
+    @font-face {
+      font-family: 'Press Gothic';
+      src: url('./fonts/PressGothic.otf') format('opentype');
+      font-weight: normal;
+      font-style: normal;
+    }
+
+    
+    body {
+      background: #1a1a1a url("./SCR-20251016-ktfs.png") no-repeat center center fixed;
+      background-size: cover;
+      background-blend-mode: overlay;
+      color: #ebe4e4;
+      font-family: 'Press Gothic', sans-serif;
+      text-align: center;
+      min-height: 100vh;
+      margin: 0;
+      padding: 20px;
+      position: relative;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.5));
+      z-index: -1;
+    }
+
+    #txStatus {
+      font-size: 85px;
+      margin: 30px auto 50px;
+      padding: 20px;
+      background: rgba(0, 0, 0, 0.7);
+      border: 3px solid #00ff00;
+      display: inline-block;
+      border-radius: 15px;
+      text-shadow: 0 0 20px #00ff00;
+      box-shadow: 0 0 30px rgba(0, 255, 0, 0.5);
+    }
+
+    .button-container {
+      display: flex;
+      justify-content: center;
+      gap: 30px;
+      flex-wrap: wrap;
+      margin: 40px auto;
+      max-width: 1200px;
+    }
+
+    .button-wrapper {
+      text-align: center;
+    }
+
+    /* Triangle layout - middle button on top */
+    .button-wrapper:nth-child(2) {
+      flex-basis: 100%;
+      order: -1;
+    }
+
+    .button-title {
+      font-size: 1.8em;
+      margin-bottom: 15px;
+      color: #fff;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+      font-weight: bold;
+    }
+
+    button {
+      background: #8b0000;
+      color: white;
+      border: 3px solid;
+      padding: 20px 40px;
+      margin: 0;
+      font-size: 1.8em;
+      cursor: pointer;
+      border-radius: 15px;
+      transition: all 0.3s ease-in-out;
+      font-family: 'Press Gothic', sans-serif;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+      min-width: 250px;
+    }
+
+    button:hover {
+      transform: translateY(-5px) scale(1.05);
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.7);
+    }
+
+    /* Individual button styles */
+    .showZombieButton {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border-color: #a78bfa;
+    }
+
+    .showZombieButton:hover {
+      background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+      box-shadow: 0 10px 30px rgba(102, 126, 234, 0.6);
+    }
+
+    .createzombieButton {
+      background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+      border-color: #fca5a5;
+    }
+
+    .createzombieButton:hover {
+      background: linear-gradient(135deg, #f5576c 0%, #f093fb 100%);
+      box-shadow: 0 10px 30px rgba(245, 87, 108, 0.6);
+    }
+
+    .levelupButton {
+      background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+      border-color: #7dd3fc;
+    }
+
+    .levelupButton:hover {
+      background: linear-gradient(135deg, #00f2fe 0%, #4facfe 100%);
+      box-shadow: 0 10px 30px rgba(0, 242, 254, 0.6);
+    }
+
+    #zombies {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-top: 50px;
+      gap: 20px;
+      padding: 20px;
+    }
+
+    .zombie {
+      background: linear-gradient(135deg, rgba(0, 0, 0, 0.9) 0%, rgba(30, 30, 30, 0.9) 100%);
+      border: 3px solid #00ff00;
+      padding: 25px;
+      margin: 10px;
+      border-radius: 15px;
+      min-width: 280px;
+      text-align: left;
+      box-shadow: 0 10px 30px rgba(0, 255, 0, 0.3);
+      transition: all 0.3s ease-in-out;
+    }
+
+    .zombie:hover {
+      transform: translateY(-10px);
+      box-shadow: 0 15px 40px rgba(0, 255, 0, 0.5);
+      border-color: #00ffff;
+    }
+
+    .zombie ul {
+      list-style: none;
+      padding: 0;
+      margin: 15px 0;
+    }
+
+    .zombie ul li {
+      padding: 10px;
+      border-bottom: 2px solid rgba(0, 255, 0, 0.3);
+      font-size: 1.1em;
+      margin: 5px 0;
+    }
+
+    .zombie ul li:last-child {
+      border-bottom: none;
+    }
+
+    .zombie h3 {
+      color: #00ff00;
+      text-shadow: 0 0 10px #00ff00;
+      font-size: 1.8em;
+      margin-bottom: 15px;
+      text-align: center;
+    }
+
+   
+    button#playMusicButton {
+      position: fixed;
+      bottom: 10px;
+      right: 10px;
+      background: #8b0000;
+      color: white;
+      border: none;
+      padding: 10px;
+      font-size: 1.2em; 
+      cursor: pointer;
+      border-radius: 5px;
+      transition: 0.3s ease-in-out;
+      font-family: 'Press Gothic', sans-serif;
+    }
+
+    button#playMusicButton i {
+      font-size: 24px; 
+    }
+
+    button#playMusicButton:hover {
+      background: #000000;
+      transform: scale(1.1);
+    }
+  </style>
+</head>
+
+<body>
+  
+  <audio id="background-audio" loop>
+    <source src="audio/last of us.mp3" type="audio/mp3">
+    Your browser does not support the audio element.
+  </audio>
+  
+  
+  <button id="playMusicButton" onclick="toggleMusic()">
+    <i class="fas fa-play"></i> 
+  </button>
+  
+  <div id="txStatus">My Zombie DApp</div>
+  
+  <div class="button-container">
+    <div class="button-wrapper">
+      <div class="button-title">🧟 View Collection</div>
+      <button class="showZombieButton">Show My Zombies</button>
+    </div>
+    
+    <div class="button-wrapper">
+      <div class="button-title">⚡ Create New</div>
+      <button class="createzombieButton">Spawn Zombie(s)</button>
+    </div>
+    
+    <div class="button-wrapper">
+      <div class="button-title">🚀 Power Up</div>
+      <button class="levelupButton">Level Up Zombie</button>
+    </div>
+  </div>
+
+  <div id="zombies"></div>
+
+  <script>
+  var isPlaying = false; 
+
+function toggleMusic() {
+  var audio = document.getElementById('background-audio');
+  var icon = document.querySelector('#playMusicButton i');
+
+  if (isPlaying) {
+    audio.pause();
+    icon.classList.remove('fa-pause');
+    icon.classList.add('fa-play');
+  } else {
+    audio.play();
+    icon.classList.remove('fa-play');
+    icon.classList.add('fa-pause');
+  }
+
+  isPlaying = !isPlaying;
+}
+
+var cryptoZombies;
+var userAccount;
+
+function startApp() {
+  var cryptoZombiesAddress = "0x0D963a0c6F83b437784c2Ea1E6cC427B5721be06";
+  cryptoZombies = new web3.eth.Contract(cryptoZombiesABI, cryptoZombiesAddress);
+
+  cryptoZombies.events.Transfer({ filter: { _to: userAccount } })
+    .on("data", function (event) {
+      getZombiesByOwner(userAccount).then(displayZombies);
+    }).on("error", console.error);
+}
+
+async function displayZombies(ids) {
+  $("#zombies").empty();
+
+  for (let id of ids) {
+    let zombie = await getZombieDetails(id);
+    $("#zombies").append(`
+      <div class="zombie">
+        <ul>
+          <li><strong>Name:</strong> ${zombie.name}</li>
+          <li><strong>DNA:</strong> ${zombie.dna}</li>
+          <li><strong>Level:</strong> ${zombie.level}</li>
+          <li><strong>Wins:</strong> ${zombie.winCount}</li>
+          <li><strong>Losses:</strong> ${zombie.lossCount}</li>
+          <li><strong>Ready Time:</strong> ${zombie.readyTime}</li>
+        </ul>
+      </div>
+    `);
+  }
+}
+
+async function createRandomZombie(name) {
+  $("#txStatus").text("Checking network...");
+  
+  // Force switch to localhost (Chain ID 1337 = 0x539 in hex)
+  try {
+    await ethereum.request({
+      method: 'wallet_switchEthereumChain',
+      params: [{ chainId: '0x539' }],
+    });
+  } catch (error) {
+    $("#txStatus").text("Please switch to localhost network in MetaMask!");
+    return;
+  }
+  
+  $("#txStatus").text("Creating new zombie...");
+  return cryptoZombies.methods.createRandomZombie(name)
+    .send({ from: userAccount })
+    .on("receipt", function (receipt) {
+      $("#txStatus").text("Zombie created!");
+      getZombiesByOwner(userAccount).then(displayZombies);
+    })
+    .on("error", function (error) {
+      $("#txStatus").text(error);
+    });
+}
+
+async function createMultipleZombies(names) {
+  $("#txStatus").text("Checking network...");
+  
+  // Force switch to localhost (Chain ID 1337 = 0x539 in hex)
+  try {
+    await ethereum.request({
+      method: 'wallet_switchEthereumChain',
+      params: [{ chainId: '0x539' }],
+    });
+  } catch (error) {
+    $("#txStatus").text("Please switch to localhost network in MetaMask!");
+    return;
+  }
+  
+  let created = 0;
+  let total = names.length;
+  
+  for (let i = 0; i < names.length; i++) {
+    let name = names[i];
+    $("#txStatus").text(`Creating zombie ${i + 1} of ${total}: "${name}"...`);
+    
+    try {
+      await cryptoZombies.methods.createRandomZombie(name)
+        .send({ from: userAccount });
+      created++;
+      $("#txStatus").text(`✓ Created ${created} of ${total} zombies...`);
+    } catch (error) {
+      $("#txStatus").text(`Error creating "${name}": ${error.message}`);
+      await new Promise(resolve => setTimeout(resolve, 2000));
+    }
+  }
+  
+  $("#txStatus").text(`🎉 Successfully created ${created} zombie(s)!`);
+  getZombiesByOwner(userAccount).then(displayZombies);
+}
+
+async function levelUp(zombieId) {
+  $("#txStatus").text("Checking network...");
+  
+  // Force switch to localhost (Chain ID 1337 = 0x539 in hex)
+  try {
+    await ethereum.request({
+      method: 'wallet_switchEthereumChain',
+      params: [{ chainId: '0x539' }],
+    });
+  } catch (error) {
+    $("#txStatus").text("Please switch to localhost network in MetaMask!");
+    return;
+  }
+  
+  $("#txStatus").text("Leveling up zombie...");
+  return cryptoZombies.methods.levelUp(zombieId)
+    .send({ from: userAccount, value: web3.utils.toWei("0.001", "ether") })
+    .on("receipt", function (receipt) {
+      $("#txStatus").text("Zombie leveled up!");
+    })
+    .on("error", function (error) {
+      $("#txStatus").text(error);
+    });
+}
+
+function getZombieDetails(id) {
+  return cryptoZombies.methods.zombies(id).call();
+}
+
+function getZombiesByOwner(owner) {
+  return cryptoZombies.methods.getZombiesByOwner(owner).call();
+}
+
+window.addEventListener('load', async () => {
+  if (window.ethereum) {
+    window.web3 = new Web3(ethereum);
+    try {
+      const accounts = await ethereum.enable();
+      userAccount = accounts[0];
+      startApp();
+    } catch (error) {
+      console.log("User denied access.");
+    }
+  } else if (window.web3) {
+    window.web3 = new Web3(web3.currentProvider);
+    userAccount = web3.eth.accounts[0];
+    startApp();
+  } else {
+    console.log('Non-Ethereum browser detected.');
+  }
+});
+
+ethereum.on('accountsChanged', () => {
+  window.location.reload();
+});
+
+ethereum.on('chainChanged', () => {
+  window.location.reload();
+});
+
+document.querySelector('.createzombieButton').addEventListener('click', () => {
+  var input = prompt("Enter zombie name(s):\n(Separate multiple names with commas)");
+  
+  if (!input || input.trim() === "") {
+    alert("Zombie name cannot be empty.");
+    return;
+  }
+  
+  // Check if input contains commas (multiple names)
+  if (input.includes(',')) {
+    // Split by comma and trim each name
+    var names = input.split(',')
+      .map(name => name.trim())
+      .filter(name => name !== "");
+    
+    if (names.length === 0) {
+      alert("Please enter valid zombie names.");
+      return;
+    }
+    
+    // Confirm creation of multiple zombies
+    if (confirm(`Create ${names.length} zombies: ${names.join(', ')}?`)) {
+      createMultipleZombies(names);
+    }
+  } else {
+    // Single zombie creation
+    createRandomZombie(input.trim());
+  }
+});
+
+document.querySelector('.showZombieButton').addEventListener('click', () => {
+  getZombiesByOwner(userAccount).then(displayZombies);
+});
+
+document.querySelector('.levelupButton').addEventListener('click', async () => {
+  let zombieName = prompt("Enter the name of the zombie to level up:");
+  if (!zombieName || zombieName.trim() === "") {
+    alert("Zombie name cannot be empty.");
+    return;
+  }
+
+  let zombies = await getZombiesByOwner(userAccount);
+
+  for (let id of zombies) {
+    let zombie = await getZombieDetails(id);
+    if (zombie.name.toLowerCase() === zombieName.toLowerCase()) {
+      levelUp(id);
+      return;
+    }
+  }
+
+  alert("No zombie found with that name.");
+});
+
+  </script>
+</body>
+
+</html>
