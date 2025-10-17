@@ -5,7 +5,7 @@
 ## Team members: My Zombie DApp Team
 
 1. Hardavi Thoria : 829265453 (hardavit@csu.fullerton.edu)
-2. Pranav Sheth :  (@csu.fullerton.edu)
+2. Pranav Sheth :  810028118 (PranavSheth@csu.fullerton.edu)
 
 ## Professor
 
