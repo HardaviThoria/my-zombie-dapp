@@ -53,8 +53,9 @@ This is a decentralized application built on blockchain technology that enables 
 
 4. **Personalization:**
    - Custom application title: "My Zombie DApp"
-   - Unique zombie character artwork as background
-   - Thematic audio and typography selections
+   - Unique zombie character artwork as background (SCR-20251016-ktfs.png)
+   - Custom background music (audio/AUDIO.mp3) with toggle controls
+   - Thematic typography with Press Gothic font
 
 5. **User Experience Optimizations:**
    - Automatic blockchain network detection and switching (Chain ID: 1337)
