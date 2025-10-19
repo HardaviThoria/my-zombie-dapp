@@ -11,6 +11,8 @@
 
 Prof. Wenlin Han, CSU Fullerton: whan@fullerton.edu
 
+##GITHUB REPO LINK: https://github.com/HardaviThoria/my-zombie-dapp/tree/main
+
 ## Project Overview
 
 This is a decentralized application built on blockchain technology that enables users to interact with smart contracts to generate, customize, and enhance their own zombie characters. Our implementation includes an intuitive web interface that connects directly with MetaMask for secure wallet transactions.
